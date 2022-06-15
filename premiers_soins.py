@@ -23,23 +23,22 @@ class SSTSIMDUTInscriptionForm(MSForm):
 
     def nettoyer(self, cadre):
         cadre = self.convertir_champs(cadre)
-        return cadre.loc[:, ['date', 'Nom', 'Prénom', 'Courriel',
-                             'Matricule', 'Département', 'Langue',
-                             'Statut', 'Professeur ou supérieur immédiat']]
+        colonnes = ['date'] + self.config.getlist('formulaire', 'colonnes')[:-1]
+        cadre = cadre.loc[:, colonnes]\
+                     .fillna(0)
+        return cadre
 
     def action(self, cadre):
         try:
             if not cadre.empty:
-                fichier_temp = Path('nouvelles_entrées.xlsx')
+                fichier_temp = Path('trousses.xlsx')
                 cadre.to_excel(fichier_temp)
                 pièces_jointes = [fichier_temp]
 
-                message = 'Bonjour! Voici les nouvelles inscriptions à faire pour le SIMDUT. Bonne journée!'
+                message = 'Bonjour! Voici des items manquants à certaines trousses de premiers soins. Bonne journée!'
                 html = f'<p>{message}</p>{cadre.to_html()}'
             else:
-                pièces_jointes = []
-                message = 'Bonjour! Il n\'y a pas eu de nouvelles inscriptions cette semaine. Bonne journée!'
-                html = f'<p>{message}</p>'
+                return
         except Exception as e:
             message = f'L\'erreur {e} s\'est produite.'
             html = f'<p>{message}</p>'
