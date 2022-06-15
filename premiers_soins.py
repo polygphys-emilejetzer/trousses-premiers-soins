@@ -32,11 +32,11 @@ class SSTSIMDUTInscriptionForm(MSForm):
         try:
             if not cadre.empty:
                 fichier_temp = Path('trousses.xlsx')
-                cadre.to_excel(fichier_temp)
+                cadre.T.to_excel(fichier_temp)
                 pièces_jointes = [fichier_temp]
 
                 message = 'Bonjour! Voici des items manquants à certaines trousses de premiers soins. Bonne journée!'
-                html = f'<p>{message}</p>{cadre.to_html()}'
+                html = f'<p>{message}</p>{cadre.T.to_html()}'
             else:
                 return
         except Exception as e:
