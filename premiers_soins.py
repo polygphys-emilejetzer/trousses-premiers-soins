@@ -2,6 +2,7 @@
 """Transmettre les nouvelles inscriptions au SIMDUT."""
 
 # Bibliothèque standard
+from datetime import datetime
 from pathlib import Path
 import time
 
@@ -29,6 +30,7 @@ class SSTSIMDUTInscriptionForm(MSForm):
         return cadre
 
     def action(self, cadre):
+        print(f'Mise à jour {datetime.now()}...')
         try:
             if not cadre.empty:
                 fichier_temp = Path('trousses.xlsx')
@@ -63,10 +65,11 @@ config.set('formulaire', 'chemin', str(fichier))
 
 formulaire = SSTSIMDUTInscriptionForm(config)
 
-schedule.every().friday.at('13:00').do(formulaire.mise_à_jour)
+schedule.every().day.at('13:00').do(formulaire.mise_à_jour)
 
 formulaire.mise_à_jour()
 try:
+    print('On commence...')
     while True:
         schedule.run_pending()
         time.sleep(1)
