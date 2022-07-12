@@ -53,25 +53,29 @@ class SSTSIMDUTInscriptionForm(MSForm):
                             pièces_jointes=pièces_jointes)
         courriel.envoyer(self.config.get('courriel', 'serveur'))
 
-chemin_config = Path('~').expanduser() / 'premiers_soins.cfg'
-config = SSTSIMDUTInscriptionConfig(chemin_config)
+def main():
+        chemin_config = Path('~').expanduser() / 'premiers_soins.cfg'
+        config = SSTSIMDUTInscriptionConfig(chemin_config)
 
-dossier = OneDrive('',
-                   config.get('onedrive', 'organisation'),
-                   config.get('onedrive', 'sous-dossier'),
-                   partagé=True)
-fichier = dossier / config.get('formulaire', 'nom')
-config.set('formulaire', 'chemin', str(fichier))
+        dossier = OneDrive('',
+                           config.get('onedrive', 'organisation'),
+                           config.get('onedrive', 'sous-dossier'),
+                           partagé=True)
+        fichier = dossier / config.get('formulaire', 'nom')
+        config.set('formulaire', 'chemin', str(fichier))
 
-formulaire = SSTSIMDUTInscriptionForm(config)
+        formulaire = SSTSIMDUTInscriptionForm(config)
 
-schedule.every().day.at('13:00').do(formulaire.mise_à_jour)
+        schedule.every().day.at('13:00').do(formulaire.mise_à_jour)
 
-formulaire.mise_à_jour()
-try:
-    print('On commence...')
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-except KeyboardInterrupt:
-    print('Fin.')
+        formulaire.mise_à_jour()
+        try:
+            print('On commence...')
+            while True:
+                schedule.run_pending()
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print('Fin.')
+
+if __name__ == '__main__':
+    main()
